@@ -1,0 +1,56 @@
+{
+  "jpsVersion": "0.3",
+  "jpsType": "install",
+  "application": {
+    "id": "DedicatedSteamServer",
+    "name": "Dedicated Steam Server",
+    "version": "latest",
+    "categories": [
+      "apps/blogs"
+    ],
+    "logo": "https://steamstore-a.akamaihd.net/public/shared/images/responsive/share_steam_logo.png",
+    "type": "php",
+    "homepage": "http://store.steampowered.com/",
+    "description": {
+      "text": "Get your very own dedicated Steam Server..."
+    },
+    "env": {
+      "topology": {
+        "ha": false,
+        "engine": "php7.0",
+        "ssl": false,
+        "nodes": [
+          {
+            "nodeType": "centos7",
+            "extip": false,
+            "count": 1,
+            "cloudlets": 16
+          }
+        ]
+      }
+    },
+    "onInstall": {
+      "executeShellCommands": [
+        {
+          "nodeType": "centos7",
+          "commands": [
+            "useradd --comment \"steam user\" -m steam",
+            "echo steam:${globals.password} | chpasswd",
+            "yum install -y nano screen wget glibc glibc.i686 libstdc++ libstdc++.i686",
+            "wget http://media.steampowered.com/installer/steamcmd_linux.tar.gz -O /home/steam/steamcmd_linux.tar.gz",
+            "chown steam:steam /home/steam/steamcmd_linux.tar.gz",
+            "tar xvzf /home/steam/steamcmd_linux.tar.gz -C /home/steam/",
+            "chown -R steam:steam /home/steam/",
+            "rm /home/steam/steamcmd_linux.tar.gz"
+          ]
+        }
+      ]
+    },
+    "globals": {
+      "password": "${fn.password}"
+    }
+  },
+  "success": {
+    "text": "Steam installed, usernames and passwords.</br></br><table style='font-size:13px; border: none;'><tr><td>Steam username:</td><td style='padding-left: 10px;'>steam</td></tr>  <tr><td>Password:</td><td style='padding-left: 10px;'>${globals.password}</td></tr></table></br>To add public IP address for your Steam server follow the steps described in the <a href='https://docs.jelastic.com/public-ipv4' target='_blank'>documentation</a></br>To set custom firewall rules follow the steps described in <a href='https://docs.jelastic.com/custom-firewall' target='_blank'>instructions</a></br>To install Steam game e.g. Insurgency, follow normal installation procedure <a href='https://steamcommunity.com/app/222880/discussions/2/648817377579416138/' target='_blank'>How to Setup a Linux Dedicated Server</a></br>1. SSH to server <a href='https://docs.jelastic.com/ssh-access' target='_blank'>documentation</a> </br>2. su steam</br>3. /home/steam/steamcmd.sh</br>4. Open ports if needed"
+  }
+}
